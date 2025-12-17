@@ -63,8 +63,5 @@ L'application respecte une structure claire et modulaire :
 
 
 ##  Auteurs
-<<<<<<< HEAD
 Projet développé dans le cadre d'un module de développement Web PHP Avancé.
-=======
-Projet développé dans le cadre d'un module de développement Web PHP Avancé.
->>>>>>> 41f05ee (ajout de la base de donnée)
+
