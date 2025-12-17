@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,8 +10,6 @@
     <title>Accueil - TravelBooking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-   
-
     <style>
         body { font-family: 'Poppins', sans-serif; }
 
@@ -39,7 +42,6 @@
             z-index: 2; 
         }
         
-        /* Style d'entrée pour la recherche en ligne */
         .search-input-field {
             border: none;
             height: 100%;
@@ -49,7 +51,6 @@
             width: 100%;
         }
 
-        /* Conteneur principal des champs de recherche */
         .search-container {
             display: grid;
             grid-template-columns: 2fr 1fr 1.5fr 1.5fr 1fr; 
@@ -66,7 +67,6 @@
             background-color: #e5e7eb; 
         }
         
-       
         .ribbon::after {
             content: '';
             position: absolute;
@@ -80,7 +80,6 @@
             border-top: 8px solid var(--ribbon-color, #1f2937); 
         }
        
-
         .hotel-card {
             background-color: #007bff; 
             color: white;
@@ -98,7 +97,7 @@
         }
         .hotel-card img {
             height: 60%; 
-            object-fit: cover; /* Ajouté pour s'assurer que l'image couvre l'espace */
+            object-fit: cover; 
         }
         .discount-badge {
             position: absolute;
@@ -147,40 +146,49 @@
             <nav class="hidden sm:ml-6 sm:flex sm:space-x-8 h-full">
                 <a href="index.php?action=vols" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Vols</a>
                 <a href="index.php?action=hotels" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Hôtels</a>
-                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Vol + Hôtel</a>
-                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Location de voiture</a>
-                <a href="index.php?action=activities" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Activités</a>
-            </nav>
 
-            <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4 h-full">
-                <button class="flex items-center space-x-1 text-sm font-bold bg-yellow-500 text-white px-3 py-1 rounded-full hover:bg-yellow-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
-                    <span>Prime</span>
-                </button>
+                <a href="index.php?action=cars" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition duration-150">Location de voiture</a>
+             
+    </nav>
 
-                <a href="index.php?action=login" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                    <span>Connexion</span>
+<div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4 h-full">
+                <?php if (isset($_SESSION['user'])): ?>
+                    <a href="index.php?action=aide" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9.247a3.75 3.75 0 100 5.506 3.75 3.75 0 000-5.506z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.75a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z" /></svg>
+                        <span>Aide</span>
+                    </a>
                     
-                </a>
+                    <a href="index.php?action=profile" class="text-blue-600 hover:text-blue-800 transition duration-150 flex items-center space-x-1 text-sm font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Profil (<?= htmlspecialchars($_SESSION['user']['name']) ?>)</span>
+                    </a>
 
-                <a href="#" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                    <span>Gérer ma réservation</span>
-                </a>
-                
-                <a href="index.php?action=aide" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9.247a3.75 3.75 0 100 5.506 3.75 3.75 0 000-5.506z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.75a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z" /></svg>
-                    <span>Aide</span>
-                </a>
+                    <a href="index.php?action=logout" class="text-red-500 hover:text-red-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Déconnexion</span>
+                    </a>
+                <?php else: ?>
+                    <a href="index.php?action=login" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        <span>Connexion</span>
+                    </a>
+                    <a href="index.php?action=aide" class="text-gray-500 hover:text-gray-700 transition duration-150 flex items-center space-x-1 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9.247a3.75 3.75 0 100 5.506 3.75 3.75 0 000-5.506z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.75a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z" /></svg>
+                        <span>Aide</span>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </header>
 <div class="slideshow">
-    <img src="image1.png" class="active blur-xs">
-    <img src="image2.png" class="blur-xs">
-    <img src="image3.jpg" class="blur-sm">
+    <img src="assets/images/image1.png" class="active blur-xs">
+    <img src="assets/images/image2.png" class="blur-xs">
+    <img src="assets/images/image3.jpg" class="blur-sm">
 
     <div class="overlay"></div>
 
@@ -193,13 +201,13 @@
                 </div>
                 
                 <div class="flex pt-2">
-                    <div class="flex items-center space-x-2 bg-white text-wh-800 p-3 rounded-t-lg font-semibold shadow-md ">
+                    <div id="tab-vols" onclick="switchTab('vols')" class="flex items-center space-x-2 bg-white text-gray-800 p-3 rounded-t-lg font-semibold shadow-md cursor-pointer transition duration-150">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                         <span>Vols</span>
                     </div>
-                    <div class="flex items-center space-x-2 p-3 font-semibold rounded-t-lg bg-transparent text-white opacity-80 cursor-pointer hover:bg-gray-700 transition duration-150">
+                    <div id="tab-hotels" onclick="switchTab('hotels')" class="flex items-center space-x-2 p-3 font-semibold rounded-t-lg bg-transparent text-white opacity-80 cursor-pointer hover:bg-gray-700 transition duration-150">
   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-1 4h1m-1 4h1M7 21h10" />
   </svg>
@@ -225,7 +233,7 @@
             </div>
 
             <div class="bg-gray-800 p-6 rounded-b-lg shadow-xl border-t border-gray-200"> 
-                <div class="flex items-center space-x-4 mb-4 text-white"> <label class="flex items-center space-x-2 cursor-pointer">
+                <div id="flightOptions" class="flex items-center space-x-4 mb-4 text-white"> <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="radio" name="trip-type" value="round" class="form-radio h-4 w-4 text-gray-500 border-white focus:ring-gray-500" checked onchange="updateTripForm()">
                         <span class="font-semibold">Aller-retour</span>
                     </label>
@@ -254,9 +262,39 @@
                 </div>
 
                 <div id="tripForm" class="space-y-4">
-                    </div>
+                </div>
 
-                <div class="flex justify-end mt-6 space-x-4">
+                <div id="hotelForm" style="display:none;" class="space-y-4">
+                     <form action="index.php" method="GET" class="space-y-4">
+                        <input type="hidden" name="action" value="hotels-list">
+                        <div class="search-container bg-white" style="grid-template-columns: 2fr 1.5fr 1.5fr 1.2fr;">
+                            <div class="relative flex items-center">
+                                <input type="text" name="destination" placeholder="Destination (Ville ou Hôtel)" class="search-input-field text-gray-700 placeholder-gray-500 pl-4" required>
+                            </div>
+                            <div class="relative flex items-center border-l border-gray-300">
+                                <input type="text" name="check_in_date" onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="Arrivée" class="search-input-field text-gray-700 placeholder-gray-500 text-center" required>
+                            </div>
+                            <div class="relative flex items-center border-l border-gray-300">
+                                <input type="text" name="check_out_date" onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="Départ" class="search-input-field text-gray-700 placeholder-gray-500 text-center" required>
+                            </div>
+                            <div class="relative flex items-center border-l border-gray-300">
+                                 <select name="guests" class="search-input-field appearance-none bg-white text-gray-700 cursor-pointer text-center">
+                                    <option value="1">1 voyageur</option>
+                                    <option value="2" selected>2 voyageurs</option>
+                                    <option value="3">3 voyageurs</option>
+                                    <option value="4">4 voyageurs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-6">
+                            <button type="submit" class="bg-blue-600 text-white font-bold px-8 py-3 rounded-md hover:bg-blue-700 transition shadow-lg">
+                                Rechercher des Hôtels
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="flightButtons" class="flex justify-end mt-6 space-x-4">
                     <button type="submit" class="border border-gray-500 bg-white text-gray-800 font-bold px-6 py-3 rounded-md hover:bg-gray-100 transition shadow-lg">
                         Rechercher Vol + Hôtel
                     </button>
@@ -264,6 +302,49 @@
                         Rechercher des vols
                     </button>
                 </div>
+
+<script>
+    function switchTab(tab) {
+        const tabVols = document.getElementById('tab-vols');
+        const tabHotels = document.getElementById('tab-hotels');
+        
+        const flightOptions = document.getElementById('flightOptions');
+        const flightButtons = document.getElementById('flightButtons');
+        const tripForm = document.getElementById('tripForm');
+        
+        const hotelForm = document.getElementById('hotelForm');
+
+        const activeClasses = ['bg-white', 'text-gray-800', 'shadow-md'];
+        const inactiveClasses = ['bg-transparent', 'text-white', 'opacity-80', 'hover:bg-gray-700'];
+
+        if (tab === 'vols') {
+            tabVols.classList.add(...activeClasses);
+            tabVols.classList.remove(...inactiveClasses);
+
+            tabHotels.classList.remove(...activeClasses);
+            tabHotels.classList.add(...inactiveClasses);
+
+            flightOptions.style.display = 'flex';
+            flightButtons.style.display = 'flex';
+            tripForm.style.display = 'block';
+
+            hotelForm.style.display = 'none';
+
+        } else if (tab === 'hotels') {
+            tabHotels.classList.add(...activeClasses);
+            tabHotels.classList.remove(...inactiveClasses);
+
+            tabVols.classList.remove(...activeClasses);
+            tabVols.classList.add(...inactiveClasses);
+
+            flightOptions.style.display = 'none';
+            flightButtons.style.display = 'none';
+            tripForm.style.display = 'none';
+
+            hotelForm.style.display = 'block';
+        }
+    }
+</script>
             </div>
         </div>
     </div>
@@ -295,7 +376,7 @@
 
         <div class="hotel-card">
             <div class="relative w-full h-full">
-                <img src="Lisbonne.png" alt="Lisbonne" class="w-full object-cover">
+                <img src="assets/images/Lisbonne.png" alt="Lisbonne" class="w-full object-cover">
                 <h3 class="hotel-title">Hôtels à Lisbonne</h3>
                 <div class="price-info">
                     <div class="flex justify-end items-end w-full">
@@ -312,7 +393,7 @@
 
         <div class="hotel-card">
             <div class="relative w-full h-full">
-                <img src="Marrakech.png" alt="Marrakech" class="w-full object-cover">
+                <img src="assets/images/Marrakech.png" alt="Marrakech" class="w-full object-cover">
                 <h3 class="hotel-title">Hôtels à Marrakech</h3>
                 <div class="price-info">
                     <div class="flex justify-end items-end w-full">
@@ -329,7 +410,7 @@
 
         <div class="hotel-card">
             <div class="relative w-full h-full">
-                <img src="Tunis.png" alt="Tunis" class="w-full object-cover">
+                <img src="assets/images/Tunis.png" alt="Tunis" class="w-full object-cover">
                 <h3 class="hotel-title">Hôtels à Tunis</h3>
                 <div class="price-info">
                     <div class="flex justify-end items-end w-full">
@@ -346,7 +427,7 @@
         
         <div class="hotel-card">
             <div class="relative w-full h-full">
-                <img src="Barcelone.png" alt="Barcelone" class="w-full object-cover">
+                <img src="assets/images/Barcelone.png" alt="Barcelone" class="w-full object-cover">
                 <h3 class="hotel-title">Hôtels à Barcelone</h3>
                 <div class="price-info">
                     <div class="flex justify-end items-end w-full">
@@ -375,8 +456,8 @@
         <div class="text-left">
             <h3 class="text-2xl font-bold text-gray-800 mb-4">Les meilleures offres sur votre smartphone</h3>
             <div class="flex space-x-4">
-                <a href="#"><img src="image4.png" alt="Télécharger sur l'App Store" class="h-10"></a>
-                <a href="#"><img src="image5.png" alt="Disponible sur Google Play" class="h-10"></a>
+                <a href="#"><img src="assets/images/image4.png" alt="Télécharger sur l'App Store" class="h-10"></a>
+                <a href="#"><img src="assets/images/image5.png" alt="Disponible sur Google Play" class="h-10"></a>
             </div>
         </div>
 
@@ -384,21 +465,18 @@
             <h3 class="text-2xl font-bold text-gray-800 mb-4">Retrouvez-nous sur les réseaux sociaux</h3>
             <p class="text-sm font-medium text-gray-700 mb-4">Faites le plein d'inspiration et découvrez tous les bons plans voyage !</p>
            <div class="flex justify-end space-x-4">
-  <!-- Facebook -->
   <a href="#" class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#1877F2] hover:bg-[#145DBF] transition" aria-label="Lien vers Facebook">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 text-white">
       <path d="M22 12a10 10 0 10-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.2l-.4 3h-1.8v7A10 10 0 0022 12z" fill="currentColor"/>
     </svg>
   </a>
 
-  <!-- Instagram -->
   <a href="#" class="w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 hover:opacity-90 transition" aria-label="Lien vers Instagram">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 text-white">
       <path d="M7 2C4.8 2 3 3.8 3 6v12c0 2.2 1.8 4 4 4h10c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4H7zm10 2c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.5-2a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="currentColor"/>
     </svg>
   </a>
 
-  <!-- TikTok -->
   <a href="#" class="w-10 h-10 flex items-center justify-center rounded-lg bg-black hover:bg-gray-800 transition" aria-label="Lien vers TikTok">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 text-white">
       <path d="M12 2h2.5c.2 1.7 1.5 3.1 3.2 3.3v2.5c-1.2 0-2.3-.4-3.2-1v7.9c0 3.2-2.6 5.8-5.8 5.8S3 17.9 3 14.7c0-3.2 2.6-5.8 5.8-5.8.5 0 1 .1 1.5.2v2.6c-.5-.2-1-.3-1.5-.3-1.8 0-3.2 1.4-3.2 3.2s1.4 3.2 3.2 3.2 3.2-1.4 3.2-3.2V2z" fill="currentColor"/>
@@ -514,20 +592,16 @@
     const tripForm = document.getElementById('tripForm');
     let current = 0;
 
-    // Mise à jour de la couleur du ruban pour le triangle
     document.addEventListener('DOMContentLoaded', () => {
         const ribbon = document.querySelector('.ribbon');
-        // Utiliser la couleur verte par défaut pour le style
         const ribbonColor = ribbon.style.getPropertyValue('--ribbon-color') || '#4712aaff'; 
         const styleSheet = document.createElement('style');
 
         document.head.appendChild(styleSheet);
         
-        // Initialiser le formulaire
         updateTripForm();
     });
 
-    // Fonction modifiée pour la mise en page en grille/ligne
     function createSegment(includeRetour = true) {
         const travelerSelect = `
             <select class="search-input-field appearance-none bg-white text-gray-700 cursor-pointer text-center">
@@ -537,7 +611,6 @@
             </select>
         `;
 
-        // Utilisation d'une structure en grille (grid) pour une disposition en ligne similaire à la photo
         const formHTML = `
             <div class="search-container bg-white">
                 
@@ -588,12 +661,7 @@
         const selected = document.querySelector('input[name="trip-type"]:checked').value;
         tripForm.innerHTML = '';
 
-        // J'ai simplifié la structure des champs pour mimer la photo : 
-        // 1. D'où ? 2. Échange 3. Où ? 4. Départ 5. Retour 6. Voyageurs
-        // La structure en grille que j'ai créée dans le CSS plus haut simule cette ligne.
-
         if (selected === 'round') {
-            // Pour l'aller-retour, on affiche 6 colonnes (avec le champ "Retour le")
             tripForm.innerHTML = `
                 <div class="search-container bg-white" style="grid-template-columns: 2fr 0.5fr 2fr 1.5fr 1.5fr 1.2fr;">
                     <div class="relative flex items-center">
@@ -625,7 +693,6 @@
                 </div>
             `;
         } else if (selected === 'oneway') {
-            // Pour l'aller simple, on supprime la colonne "Retour le" (5 colonnes)
             tripForm.innerHTML = `
                 <div class="search-container bg-white" style="grid-template-columns: 2fr 0.5fr 2fr 1.5fr 1.2fr;">
                     <div class="relative flex items-center">
@@ -654,7 +721,6 @@
                 </div>
             `;
         } else if (selected === 'multi') {
-            // Pour le multi-destination, on n'a pas le champ "Retour le" et on peut ajouter des segments (4 colonnes de champs + bouton)
             tripForm.innerHTML = `
                 <div class="multi-segments space-y-3">
                     <div class="search-container bg-white" style="grid-template-columns: 2fr 0.5fr 2fr 1.5fr 1.2fr;">
@@ -694,13 +760,10 @@
     const multiSegments = document.querySelector('.multi-segments');
     
     if (multiSegments) {
-        // Crée l'élément div pour le nouveau segment
         const newSegment = document.createElement('div');
-        newSegment.className = 'search-container bg-white'; // On retire 'space-y-3' ici car c'est pour les blocs verticaux
-        // On ajuste le grid-template-columns pour inclure une petite colonne pour le bouton "X"
-        newSegment.style.gridTemplateColumns = '2fr 0.5fr 2fr 1.5fr 1.2fr 0.3fr'; // Ajout d'une colonne pour le X
+        newSegment.className = 'search-container bg-white'; 
+        newSegment.style.gridTemplateColumns = '2fr 0.5fr 2fr 1.5fr 1.2fr 0.3fr'; 
         
-        // Structure HTML du nouveau segment (avec le bouton de suppression "X")
         newSegment.innerHTML = `
             <div class="relative flex items-center p-2">
                 <input type="text" placeholder="D'où partez-vous ?" class="search-input-field text-gray-700 placeholder-gray-500 w-full p-1 border-none focus:ring-0">
@@ -744,7 +807,6 @@
     }
 }
 
-// La fonction removeSegment reste la même
 function removeSegment(buttonElement) {
     const segmentToRemove = buttonElement.closest('.search-container');
     if (segmentToRemove) {
@@ -758,7 +820,6 @@ function removeSegment(buttonElement) {
         slides[current].classList.add('active');
     }
 
-    // setInterval(nextSlide, 5000); // Décommenter pour activer le diaporama automatique
 </script>
 <script>
     function startSlideshow() {
@@ -766,21 +827,16 @@ function removeSegment(buttonElement) {
         let currentIndex = 0;
 
         function nextImage() {
-            // 1. Retirer la classe 'active' de l'image courante
             images[currentIndex].classList.remove('active');
 
-            // 2. Calculer l'index de la prochaine image
             currentIndex = (currentIndex + 1) % images.length;
 
-            // 3. Ajouter la classe 'active' à la nouvelle image
             images[currentIndex].classList.add('active');
         }
 
-        // 4. Définir un intervalle pour changer d'image toutes les 4000 millisecondes (4 secondes)
         setInterval(nextImage, 4000); 
     }
 
-    // Démarrer le diaporama une fois que le document est prêt
     document.addEventListener('DOMContentLoaded', startSlideshow);
 </script>
 

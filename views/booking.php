@@ -1,8 +1,17 @@
 <?php 
-// la session est démarrée au début de index.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$vols_trouves = $vols_trouves ?? [];
+$criteria = $criteria ?? [];
+
+$trip_type_selected = $criteria['trip_type'] ?? 'round_trip';
+$departure_value = htmlspecialchars($criteria['departure'] ?? '');
+$arrival_value = htmlspecialchars($criteria['arrival'] ?? '');
+$departure_date_value = htmlspecialchars($criteria['departure_date'] ?? '');
+$return_date_value = htmlspecialchars($criteria['return_date'] ?? '');
+$passengers_value = htmlspecialchars($criteria['passengers'] ?? 1);
+$travel_class_selected = $criteria['travel_class'] ?? 'economy';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -16,15 +25,14 @@ if (session_status() === PHP_SESSION_NONE) {
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            
+            background-color: #f0f2f5;
         }
 
-      
         .header-background {
-            background-image: url('image7.jpg'); 
+            background-image: url('image6.png'); 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; 
+            background-attachment: fixed;
             position: relative;
             z-index: 0;
             padding-top: 64px;
@@ -38,13 +46,13 @@ if (session_status() === PHP_SESSION_NONE) {
             right: 0;
             bottom: 0;
             background-color: rgba(0, 0, 0, 0.4); 
-
+            backdrop-filter: blur(2px);
             z-index: 1;
         }
 
         .header-content {
             position: relative;
-            z-index: 2; 
+            z-index: 2;
         }
 
         .nav-link {
@@ -54,12 +62,11 @@ if (session_status() === PHP_SESSION_NONE) {
         }
 
         .nav-link.active {
-            
-            color: #1f2937; /* Texte plus foncé */
+            border-color: #3b82f6; 
+            color: #1f2937; 
             font-weight: 600;
         }
 
-        /* Styles spécifiques aux inputs dans le formulaire  */
         .search-input-group {
             position: relative;
         }
@@ -72,12 +79,13 @@ if (session_status() === PHP_SESSION_NONE) {
             font-size: 0.95rem;
             color: #374151;
             transition: all 0.2s ease-in-out;
-            padding-left: 2.5rem; /* Espace pour l'icône */
+            padding-left: 2.5rem; 
         }
         .search-input:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 1px #3b82f6;
+            
         }
         .search-input-icon {
             position: absolute;
@@ -87,10 +95,9 @@ if (session_status() === PHP_SESSION_NONE) {
             color: #6b7280;
         }
 
-        /* Style pour les listes d'autocomplétion */
         .autocomplete-results {
             position: absolute;
-            z-index: 100; 
+            z-index: 100;
             width: 100%;
             background-color: #fff;
             border: 1px solid #e5e7eb;
@@ -98,7 +105,7 @@ if (session_status() === PHP_SESSION_NONE) {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-height: 200px;
             overflow-y: auto;
-            margin-top: 4px; 
+            margin-top: 4px;
         }
         .autocomplete-results li {
             padding: 0.75rem 1rem;
@@ -111,7 +118,6 @@ if (session_status() === PHP_SESSION_NONE) {
             background-color: #f3f4f6;
         }
 
-        /* Style pour le message d'info */
         .info-box {
             background-color: #e0f2fe; 
             border: 1px solid #90cdf4; 
@@ -124,9 +130,47 @@ if (session_status() === PHP_SESSION_NONE) {
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             margin-top: 3rem;
         }
+        .info-box.error {
+            background-color: #fee2e2; 
+            border-color: #fca5a5; 
+            color: #991b1b; 
+        }
+
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
+    <div id="loader-overlay" class="hidden">
+        <div class="spinner"></div>
+        <p class="text-blue-600 font-semibold text-lg">Recherche des meilleurs vols...</p>
+    </div>
 
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,194 +203,92 @@ if (session_status() === PHP_SESSION_NONE) {
                 Trouvez Votre Prochain Vol
             </h1>
 
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <div class="flex space-x-6 mb-6">
-                    <label class="inline-flex items-center text-gray-700">
-                        <input type="radio" name="trip_type" value="round_trip" class="form-radio text-blue-600" checked>
-                        <span class="ml-2">Aller-retour</span>
-                    </label>
-                    <label class="inline-flex items-center text-gray-700">
-                        <input type="radio" name="trip_type" value="one_way" class="form-radio text-blue-600">
-                        <span class="ml-2">Aller Simple</span>
-                    </label>
-                </div>
-
-                <form action="index.php?action=search-flights" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="search-input-group col-span-1 md:col-span-2 lg:col-span-1">
-                        <label for="departure_airport" class="sr-only">Départ</label>
-                        <i class="fas fa-plane-departure search-input-icon"></i>
-                        <input type="text" id="departure_airport" name="departure" placeholder="Départ (Ville ou Aéroport)" class="search-input">
-                        <ul id="departure_airport-results" class="autocomplete-results hidden"></ul>
-                    </div>
-
-                    <div class="search-input-group col-span-1 md:col-span-2 lg:col-span-1">
-                        <label for="arrival_airport" class="sr-only">Arrivée</label>
-                        <i class="fas fa-plane-arrival search-input-icon"></i>
-                        <input type="text" id="arrival_airport" name="arrival" placeholder="Arrivée (Ville ou Aéroport)" class="search-input">
-                        <ul id="arrival_airport-results" class="autocomplete-results hidden"></ul>
-                    </div>
+            <?php include 'flight_search_form.php'; ?>
+            
+            <?php if (!empty($vols_trouves) || (isset($criteria) && count($criteria) > 0)): ?>
+                
+                <div class="mt-12 w-full">
+                    <h2 class="text-3xl font-bold text-white mb-6">
+                        <?php echo empty($vols_trouves) ? "Aucun vol trouvé." : "Vols trouvés pour " . $departure_value . " vers " . $arrival_value; ?>
+                    </h2>
                     
-                    <div class="search-input-group col-span-1" id="return_date_group">
-                        <label for="departure_date" class="sr-only">Date Aller</label>
-                        <i class="fas fa-calendar-alt search-input-icon"></i>
-                        <input type="date" id="departure_date" name="departure_date" placeholder="jj/mm/aaaa" class="search-input">
-                    </div>
+                    <?php if (!empty($vols_trouves)): ?>
+                        <div class="space-y-4">
+                            <?php foreach ($vols_trouves as $vol): ?>
+                                <?php 
+                                    $priceKeyMap = [
+                                        'economy' => 'price_economy', 
+                                        'business' => 'price_business',
+                                        'first' => 'price_first'
+                                    ];
+                                    
+                                    $priceKey = $priceKeyMap[$travel_class_selected] ?? 'price_economy';
+                                    
+                                    $pricePerPerson = $vol[$priceKey] ?? $vol['price_economy'] ?? 0;
+                                    $finalPrice = $pricePerPerson * $passengers_value;
 
-                    <div class="search-input-group col-span-1" id="return_date_group">
-                        <label for="return_date" class="sr-only">Date Retour</label>
-                        <i class="fas fa-calendar-alt search-input-icon"></i>
-                        <input type="date" id="return_date" name="return_date" placeholder="jj/mm/aaaa" class="search-input">
-                    </div>
+                                    $departureDisplay = $vol['departure_city'] . ' (' . $vol['departure_iata'] . ')';
+                                    $arrivalDisplay = $vol['arrival_city'] . ' (' . $vol['arrival_iata'] . ')';
+                                ?>
+                                <div class="bg-white p-6 rounded-xl shadow-lg flex justify-between items-center transition hover:shadow-xl">
+                                    
+                                    <div class="flex items-center space-x-6 w-1/4">
+                                        <i class="fas fa-plane text-2xl text-blue-600"></i>
+                                        <div>
+                                            <p class="text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($vol['airline']); ?></p>
+                                            <p class="text-sm font-normal text-gray-500">Vol : <?php echo htmlspecialchars($vol['flight_number']); ?></p>
+                                        </div>
+                                    </div>
 
-                    <div class="search-input-group col-span-1">
-                        <label for="passengers" class="sr-only">Passagers</label>
-                        <i class="fas fa-users search-input-icon"></i>
-                        <input type="number" id="passengers" name="passengers" value="1" min="1" class="search-input">
-                    </div>
+                                    <div class="flex items-center justify-center w-2/4">
+                                        <div class="text-center">
+                                            <p class="text-2xl font-bold text-gray-900"><?php echo htmlspecialchars($vol['departure_time']); ?></p>
+                                            <p class="text-gray-600"><?php echo htmlspecialchars($departureDisplay); ?></p>
+                                        </div>
+                                        
+                                        <div class="mx-6 text-center">
+                                            <i class="fas fa-long-arrow-alt-right text-gray-400"></i>
+                                            <p class="text-sm text-gray-500 mt-1"><?php echo htmlspecialchars($vol['duration']); ?></p>
+                                        </div>
+                                        
+                                        <div class="text-center">
+                                            <p class="text-2xl font-bold text-gray-900">
+                                                <?php echo "--:--"; ?>
+                                            </p>
+                                            <p class="text-gray-600"><?php echo htmlspecialchars($arrivalDisplay); ?></p>
+                                        </div>
+                                    </div>
 
-                    <div class="search-input-group col-span-1">
-                        <label for="travel_class" class="sr-only">Classe</label>
-                        <i class="fas fa-chair search-input-icon"></i>
-                        <select id="travel_class" name="travel_class" class="search-input appearance-none bg-white pr-8">
-                            <option value="economy">Économique</option>
-                            <option value="business">Affaires</option>
-                            <option value="first">Première</option>
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"></i>
-                    </div>
-
-                    <div class="col-span-full flex justify-end">
-                        <button type="submit" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md">
-                            <i class="fas fa-search mr-2"></i> Rechercher Des Vols
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="info-box text-center">
+                                    <div class="text-right w-1/4">
+                                        <p class="text-sm text-gray-500">
+                                            Prix total (<?php echo $passengers_value; ?> pers.)
+                                        </p>
+                                        <p class="text-3xl font-extrabold text-green-600 mb-2">
+                                            <?php echo number_format($finalPrice, 0, ',', ' '); ?> €
+                                        </p>
+                                        <a href="index.php?action=book-flight&flight_id=<?php echo $vol['id']; ?>" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
+                                            Réserver
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                    <?php else: ?>
+                        <div class="info-box error mt-6">
+                            <i class="fas fa-exclamation-triangle text-3xl"></i>
+                            <p class="text-lg">Désolé, aucun vol trouvé pour votre sélection. Veuillez essayer d'autres critères de recherche.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            
+            <div class="info-box text-center" id="initial_info_box" style="<?php echo (isset($criteria) && count($criteria) > 0) ? 'display: none;' : 'display: flex;'; ?>">
                 <i class="fas fa-info-circle text-3xl"></i>
                 <p class="text-lg">Veuillez remplir le formulaire ci-dessus pour lancer votre recherche de vols.</p>
             </div>
             
         </div>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- Logique Aller-retour / Aller Simple ---
-            const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
-            const returnDateGroup = document.getElementById('return_date_group');
-            const returnDateInput = document.getElementById('return_date');
-
-            function toggleReturnDate() {
-                if (document.querySelector('input[name="trip_type"]:checked').value === 'one_way') {
-                    returnDateGroup.style.display = 'none';
-                    returnDateInput.removeAttribute('required'); // Rendre non obligatoire
-                    returnDateInput.value = ''; // Vider le champ
-                } else {
-                    returnDateGroup.style.display = 'block';
-                    returnDateInput.setAttribute('required', 'required'); // Rendre obligatoire
-                }
-            }
-
-            tripTypeRadios.forEach(radio => {
-                radio.addEventListener('change', toggleReturnDate);
-            });
-
-            // Initialiser l'état au chargement de la page
-            toggleReturnDate();
-
-
-            // --- Logique d'Autocomplétion (pour Départ et Arrivée) ---
-            const departureInput = document.getElementById('departure_airport');
-            const arrivalInput = document.getElementById('arrival_airport');
-
-            function handleAutocomplete(event) {
-                const inputElement = event.target;
-                const searchTerm = inputElement.value;
-                const resultsContainerId = inputElement.id + '-results';
-                let resultsContainer = document.getElementById(resultsContainerId);
-
-                if (!resultsContainer) {
-                    resultsContainer = document.createElement('ul');
-                    resultsContainer.id = resultsContainerId;
-                    resultsContainer.className = 'autocomplete-results'; // Utilise la classe CSS définie
-                    inputElement.parentNode.appendChild(resultsContainer);
-                }
-                resultsContainer.innerHTML = ''; 
-
-                if (searchTerm.length < 2) {
-                    resultsContainer.style.display = 'none';
-                    return;
-                }
-
-                // Appel AJAX vers votre route `search-airport`
-                fetch(`index.php?action=search-airport&q=${encodeURIComponent(searchTerm)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            console.error("Erreur du serveur :", data.error);
-                            return;
-                        }
-                        
-                        if (data.length > 0) {
-                            data.forEach(airport => {
-                                const listItem = document.createElement('li');
-                                listItem.innerHTML = `
-                                    <div data-iata="${airport.iata_code}" data-name="${airport.name}" data-city="${airport.city}" class="flex items-center">
-                                        <i class="fas fa-plane mr-2 text-gray-500"></i>
-                                        <span><strong>${airport.iata_code}</strong> - ${airport.name}, ${airport.city} (${airport.country})</span>
-                                    </div>
-                                `;
-                                
-                                listItem.querySelector('div').addEventListener('click', function() {
-                                    inputElement.value = this.dataset.name + " (" + this.dataset.iata + ")"; // Affiche Nom (IATA)
-                                    // Ou inputElement.value = this.dataset.city + " (" + this.dataset.iata + ")";
-                                    resultsContainer.style.display = 'none';
-                                });
-
-                                resultsContainer.appendChild(listItem);
-                            });
-                            resultsContainer.style.display = 'block';
-                        } else {
-                            resultsContainer.innerHTML = '<li class="p-2 text-gray-500 text-sm">Aucun aéroport trouvé.</li>';
-                            resultsContainer.style.display = 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur de réseau ou de parsing:', error);
-                    });
-            }
-
-            // Attacher l'événement d'entrée avec debounce
-            function debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    const context = this;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), delay);
-                };
-            }
-
-            if (departureInput) {
-                departureInput.addEventListener('input', debounce(handleAutocomplete, 300));
-            }
-            if (arrivalInput) {
-                arrivalInput.addEventListener('input', debounce(handleAutocomplete, 300));
-            }
-
-            // Cacher la liste si l'utilisateur clique ailleurs
-            document.addEventListener('click', function(e) {
-                if (departureInput && !departureInput.contains(e.target) && !e.target.closest('#departure_airport-results')) {
-                    const departureResults = document.getElementById('departure_airport-results');
-                    if (departureResults) departureResults.style.display = 'none';
-                }
-                if (arrivalInput && !arrivalInput.contains(e.target) && !e.target.closest('#arrival_airport-results')) {
-                    const arrivalResults = document.getElementById('arrival_airport-results');
-                    if (arrivalResults) arrivalResults.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 </html>

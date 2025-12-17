@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,20 +5,18 @@
     <title>Connexion - TravelBooking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            /* On enlève le fond gris du body, le fond sera l'image */
         }
 
-        /* Style spécifique pour la barre de navigation active (Connexion) */
         .nav-link-active {
             border-bottom: 2px solid #3b82f6; 
             color: #1f2937; 
             font-weight: 600;
         }
 
-        /* Styles des champs de formulaire */
         .input-field {
             background-color: #eff6ff;
             border: 1px solid #dbeafe;
@@ -34,17 +31,14 @@
             box-shadow: 0 0 0 1px #60a5fa;
         }
 
-        /* --- STYLES POUR L'IMAGE DE FOND --- */
         .background-container {
-            /* REMPLACER AVEC VOTRE VRAIE URL D'IMAGE */
-            background-image: url('image6.png'); 
+            background-image: url('assets/images/image6.png'); 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* L'image ne bouge pas au scroll */
+            background-attachment: fixed;
             position: relative;
             z-index: 10;
         }
-        /* Overlay sombre pour assombrir l'image et garantir la lisibilité */
         .background-container::before {
             content: '';
             position: absolute;
@@ -52,13 +46,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            /* 40% d'opacité noire */
             background-color: rgba(0, 0, 0, 0.4); 
-            /* Un léger flou pour imiter l'effet de votre page d'accueil */
             backdrop-filter: blur(2px); 
             z-index: 20;
         }
-        /* S'assurer que le formulaire est au-dessus de l'overlay */
         .form-content {
             position: relative;
             z-index: 30; 
@@ -89,7 +80,26 @@
 <div class="min-h-screen flex items-start justify-center pt-20 pb-12 background-container">
     <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl transition duration-300 transform hover:shadow-3xl form-content">
         
+        
         <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Se connecter</h2>
+        
+        <?php if (isset($errorMessage) && $errorMessage): ?>
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p class="text-sm text-red-600 text-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <?php echo htmlspecialchars($errorMessage); ?>
+                </p>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['flash_message'])): ?>
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p class="text-sm text-green-600 text-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <?php echo htmlspecialchars($_SESSION['flash_message']); unset($_SESSION['flash_message']); ?>
+                </p>
+            </div>
+        <?php endif; ?>
         
       <form action="index.php?action=login" method="POST">
 

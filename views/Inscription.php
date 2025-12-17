@@ -1,6 +1,4 @@
 <?php 
-// Si vous utilisez la session pour les messages d'erreur ou la redirection après inscription, 
-// assurez-vous que session_start() est bien exécuté avant d'inclure cette vue.
 // session_start(); 
 ?>
 <!DOCTYPE html>
@@ -13,17 +11,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-        /* Typographie cohérente */
         body { font-family: 'Poppins', sans-serif; }
 
-        /* Style pour l'état actif du lien 'Créer un compte' */
         .nav-link-active {
             border-bottom: 2px solid #3b82f6; 
             color: #1f2937; 
             font-weight: 600;
         }
 
-        /* Styles des champs de formulaire (fond bleu pâle cohérent) */
         .input-field {
             background-color: #eff6ff;
             border: 1px solid #dbeafe;
@@ -38,10 +33,8 @@
             box-shadow: 0 0 0 1px #60a5fa;
         }
         
-        /* --- STYLES POUR L'IMAGE DE FOND (THÈME VILLE) --- */
         .background-container {
-            /* REMPLACER AVEC L'URL DE VOTRE IMAGE DE VILLE/VOYAGE HOSTÉE */
-            background-image: url('image6.png'); 
+            background-image: url('assets/images/image6.png'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed; 
@@ -55,12 +48,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            /* Overlay sombre pour garantir la lisibilité du formulaire blanc */
             background-color: rgba(0, 0, 0, 0.4); 
             backdrop-filter: blur(2px); 
             z-index: 20;
         }
-        /* Assure que le formulaire est au-dessus de l'overlay */
         .form-content {
             position: relative;
             z-index: 30; 
@@ -124,7 +115,16 @@
             <div class="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <form action="index.php?action=register" method="POST">
+        <?php if (isset($errorMessage) && $errorMessage): ?>
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p class="text-sm text-red-600 text-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <?php echo htmlspecialchars($errorMessage); ?>
+                </p>
+            </div>
+        <?php endif; ?>
+
+        <form action="index.php?action=signup" method="POST">
             
             <div class="mb-5">
                 <label for="full_name" class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>

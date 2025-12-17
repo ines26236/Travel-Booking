@@ -1,9 +1,7 @@
 <?php 
-//la session est démarrée au début de index.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -20,10 +18,8 @@ if (session_status() === PHP_SESSION_NONE) {
             background-color: #f0f2f5;
         }
 
-       
         .header-background {
-            
-            background-image: url('image9.png'); 
+            background-image: url('assets/images/image9.png'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -49,7 +45,6 @@ if (session_status() === PHP_SESSION_NONE) {
             z-index: 2;
         }
 
-        /* Styles de la navigation */
         .nav-link {
             padding: 0.75rem 1rem;
             border-bottom: 2px solid transparent;
@@ -62,7 +57,6 @@ if (session_status() === PHP_SESSION_NONE) {
             font-weight: 600;
         }
         
-        /* Styles spécifiques aux inputs */
         .search-input-group {
             position: relative;
         }
@@ -75,7 +69,7 @@ if (session_status() === PHP_SESSION_NONE) {
             font-size: 0.95rem;
             color: #374151;
             transition: all 0.2s ease-in-out;
-            padding-left: 2.5rem; /* Espace pour l'icône */
+            padding-left: 2.5rem; 
         }
         .search-input:focus {
             outline: none;
@@ -126,7 +120,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
             <div class="bg-white p-8 rounded-xl shadow-lg">
                 
-                <form action="index.php?action=search-hotels" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <form action="index.php" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <input type="hidden" name="action" value="hotels-list">
                     
                     <div class="search-input-group col-span-full md:col-span-2 lg:col-span-1">
                         <label for="destination" class="sr-only">Destination</label>
@@ -136,13 +131,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <div class="search-input-group col-span-1">
                         <label for="check_in_date" class="sr-only">Arrivée</label>
-                        <i class="fas fa-calendar-check search-input-icon"></i>
+                        
                         <input type="date" id="check_in_date" name="check_in_date" class="search-input" required>
                     </div>
 
                     <div class="search-input-group col-span-1">
                         <label for="check_out_date" class="sr-only">Départ</label>
-                        <i class="fas fa-calendar-times search-input-icon"></i>
+                        
                         <input type="date" id="check_out_date" name="check_out_date" class="search-input" required>
                     </div>
                     
@@ -158,28 +153,17 @@ if (session_status() === PHP_SESSION_NONE) {
                         </button>
                     </div>
                 </form>
-            </div>
-
-            <div class="info-box text-center bg-green-100 border-green-300 text-green-800 mt-8 rounded-lg p-4 flex items-center gap-4 shadow-md">
-                <i class="fas fa-bed text-3xl"></i>
-                <p class="text-lg">Entrez votre destination et vos dates pour trouver les meilleures offres d'hôtels.</p>
-            </div>
+            </div> 
             
-        </div>
-    </main>
-
     <script>
-        //  validation simple pour les dates
         document.addEventListener('DOMContentLoaded', function() {
             const checkInInput = document.getElementById('check_in_date');
             const checkOutInput = document.getElementById('check_out_date');
             
-            // Empêche la sélection d'une date passée
             const today = new Date().toISOString().split('T')[0];
             checkInInput.setAttribute('min', today);
             checkOutInput.setAttribute('min', today);
 
-            // La date de départ doit être après la date d'arrivée
             checkInInput.addEventListener('change', function() {
                 if (checkInInput.value) {
                     checkOutInput.setAttribute('min', checkInInput.value);
